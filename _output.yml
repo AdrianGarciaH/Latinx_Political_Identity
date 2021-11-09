@@ -3,10 +3,6 @@ bookdown::gitbook:
   config:
     toc:
       before: |
-<<<<<<< HEAD
         <li><a href="./">Latinx Identity</a></li>
-=======
-        <li><a href="./">Latinx_Identity</a></li>
->>>>>>> 13b25f09db085ead2ee3a9200b638d7cb073d9c6
       after: |
         <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
