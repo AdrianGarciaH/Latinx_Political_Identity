@@ -2,7 +2,7 @@
 
 We will explore different questions regarding the political identity of different Latinx groups living in the United States. 
 
-Link to book URL: file:///Users/adriangarcia/Projects/EDAV/Latinx_Political_Identity/docs/index.html
+Link to book URL: adriangarciah.github.io/latinx_political_identity/
 
 
 *This repo was initially generated from a bookdown template available here: https://github.com/jtr13/EDAVtemplate.*	
