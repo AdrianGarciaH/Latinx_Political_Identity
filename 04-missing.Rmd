@@ -1,1 +1,150 @@
 # Missing values
+We decided that quite a few of the variables included on our original database are not of interest to our research questions. Therefore. we created a new dataset that includes only 67 of the original 110 columns in our data file. These columns were selected because they include information about the respondent's personal identity as well as political leanings and views on the term 'Latinx'
+
+When we run our missing patterns function on our new dataset we find that the vast majority of our variables don't include any missing values. However, we have so many variables that our graph is very difficult to interpret. 
+```{r}
+library(tidyverse)
+library(patchwork)
+
+plot_missing <- function(data, percent=FALSE) {
+  
+  missing_patterns <- data.frame(is.na(data)) %>%
+  group_by_all() %>%
+  count(name = "count", sort = TRUE) %>%
+  ungroup()
+
+  missing_patterns <- missing_patterns %>%
+    rownames_to_column("id")
+
+  
+  missing_patterns$id <- as.integer(missing_patterns$id)
+  missing_patterns$id <- as.factor(missing_patterns$id)
+    
+  missing_rows <- data %>% 
+    summarise_all(~ sum(is.na(.)))
+  
+missing_rows_percent <- data %>% 
+  summarise_all(~sum(is.na(.))/(sum(!is.na(.))+sum(is.na(.))))
+
+
+tidyrows <- data.frame(t(missing_rows))%>%
+  rownames_to_column("variables")
+
+names(tidyrows)[2] <- 'Count'
+
+tidyrows_percent <- data.frame(t(missing_rows_percent))%>%
+  rownames_to_column("variables")
+
+names(tidyrows_percent)[2] <- 'Count'
+
+
+  tidymissing <- missing_patterns %>%
+    select(!(count))%>%
+    gather(key, value, -id)%>%
+    mutate(missing = ifelse((value == 0), "yes", "no"))
+  
+tidymissing$key <- factor(tidymissing$key, levels = tidyrows[order(-tidyrows$Count, tidyrows$variables),]$variables)
+
+tidyrows$variables <- factor(tidyrows$variables, levels = tidyrows[order(-tidyrows$Count, tidyrows$variables),]$variables) 
+
+
+
+tidyrows_percent$variables <- factor(tidyrows_percent$variables, levels = tidyrows_percent[order(-tidyrows_percent$Count, tidyrows_percent$variables),]$variables)
+
+if (percent){   
+p1 <- ggplot(tidymissing, aes(x= key, y= fct_rev(id) , fill = missing)) + geom_tile(color = "white") + labs(x="Variable", y="Missing Patterns") +  scale_fill_manual(values = c("purple", "grey")) + theme(legend.position = "none") 
+
+complete_cases  <- tidymissing %>% count(id, wt = value)
+
+for (row in 1:nrow(complete_cases)) {
+    id <- complete_cases[row, "id"]
+    n  <- complete_cases[row, "n"]
+    
+    if(n == 0) {
+        p1 <- p1 + annotate("rect", xmin = .5, xmax = ncol(data)+.5, ymin = (nrow(complete_cases) - as.numeric(id) + .5), ymax = (nrow(complete_cases)) - as.numeric(id) + 1.5,
+  alpha = .2) + annotate("text", x=ncol(data)/2, y = (nrow(complete_cases)) - as.numeric(id) + 1, label = "Complete cases")
+    }
+}
+  
+  p2 <- ggplot(missing_patterns, aes(x=fct_rev(id), y =count/sum(count))) + geom_bar(stat='identity') + labs(x='', y="% rows") + coord_flip()+ scale_y_continuous(labels = scales::percent, limits = c(0, 1))
+  
+  p3 <-ggplot(tidyrows_percent, aes(x=variables, y=Count)) + geom_bar(stat='identity') + labs(x="", y="% rows missing") + scale_y_continuous(labels = scales::percent, limits = c(0, 1))
+  
+  layout <- "
+AAA#
+CCCD
+CCCD
+CCCD
+"
+p3  + p1 + p2 + 
+  plot_layout(design = layout)
+}else{
+  
+p1 <- ggplot(tidymissing, aes(x= key, y= fct_rev(id) , fill = missing)) + geom_tile(color = "white") + labs(x="Variable", y="Missing Patterns") +  scale_fill_manual(values = c("purple", "grey")) + theme(legend.position = "none") 
+
+complete_cases  <- tidymissing %>% count(id, wt = value)
+
+for (row in 1:nrow(complete_cases)) {
+    id <- complete_cases[row, "id"]
+    n  <- complete_cases[row, "n"]
+    
+    if(n == 0) {
+        p1 <- p1 + annotate("rect", xmin = .5, xmax = ncol(data)+.5, ymin = (nrow(complete_cases) - as.numeric(id) + .5), ymax = (nrow(complete_cases)) - as.numeric(id) + 1.5,
+  alpha = .2) + annotate("text", x=ncol(data)/2, y = (nrow(complete_cases)) - as.numeric(id) + 1, label = "Complete cases")
+    }
+}
+  p2 <- ggplot(missing_patterns, aes(x=fct_rev(id), y =count)) + geom_bar(stat='identity') + labs(x='', y="Row Count") + coord_flip() 
+  
+  p3 <-ggplot(tidyrows, aes(x=variables, y=Count)) + geom_bar(stat='identity') + labs(x="", y="# Rows Missing")+ scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+  
+  layout <- "
+AAA#
+CCCD
+CCCD
+CCCD
+"
+p3  + p1 + p2 + 
+  plot_layout(design = layout)
+  
+  
+}
+  
+  
+}
+
+```
+
+```{r}
+library(haven)
+dataset = read_sav("ATP W58.sav")
+
+dataset2 <-  dataset[ , c(1,8,10,11,12,13,14,15,16,17,18,19,21,22,23,32,39,40,41,42,43,44,49,50,51,52,63,64,65,66,67,69,70,71,72,73,74,75,78,79,80,81,82,83,84,85,86,87,88,89,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,110)] 
+
+
+plot_missing(dataset2, percent = TRUE)
+```
+
+
+To solve this, we created a new chart by only selecting the variables that have missing values from our new database. By doing so, we can see that only 6 variables of interest contain missing data. The new graph of missing patterns is much clearer and tells us that, with the exception of the 'HISPDIS' variable, missing values are very common for most of these variables. 
+
+```{r}
+colnames(dataset2)[colSums(is.na(dataset2)) > 0]
+
+dataset3 <-  dataset[ , c("HISPORIG2_W58","LATINX3_W58", "LATINX4_W58" , "HISPDISCR_d_W58", "YEARSINUS_W58" , "F_PARTYLN_FINAL")] 
+
+names(dataset3) <- substring(names(dataset3), 0, 7)
+plot_missing(dataset3, percent = TRUE)
+```
+
+
+By taking a look at the survey set up we realized that most of those missing values are there due to the nature of the survey itself.
+
+HISPORI represents a survey question that asks participants to rank which heritage they identify with the most. However, the question is only presented if the respondent listed that they identified with more than one heritage in a previous question. Therefore, the fact that around 85% of rows are missing a value for this question means that most of the respondents identify with only 1 heritage and therefore were not presented with this question. 
+
+LATINX3 and LATINX4 ask whether the respondent has ever used the word Latinx to describe themselves and whether they feel it should be used to describe the Latino/Hispanic population in general. They are only presented to a respondent if they previously answered that they have heard that word before and know its meaning. Therefore, since around 75% of rows have missing values for this variable, we can deduct that only about 25% of respondents knew the meaning of the word. 
+
+YEARSIN asks how many years the respondent has lived in the US if the respondent was born outside of the US. Therefore we can tell that less than 50% of respondents where born outside of the US and were presented with this question. 
+
+HISPDIS asks if the respondent has been criticized for speaking Spanish publicly, we can assume that the missing values present here represent respondents who do not speak Spanish and therefore could not answer this question. 
+
+The F_PARTY variable is more complicated as it was created by the survey conductors to mark the political leaning of the respondent and is not based on a question itself. We can assume that the missing values represent reponents for which a political leaning could not be determined. However, we might look into other questions that best describe a person's political preference if such information is needed on our analysis.
