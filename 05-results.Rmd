@@ -1,1 +1,17 @@
 # Results
+
+```{r}
+#Inital Data exploration
+#3030 observations of 110 variables 
+
+
+```
+
+
+
+```{r}
+#Initial Data exploration for Question 2: Does experiencing discrimination based on ethnic identity lead to more liberal political views? For example, do people who have experienced discrimination more easily embrace gender-neutral ways of expressing the Latin experience?
+
+
+```
+
