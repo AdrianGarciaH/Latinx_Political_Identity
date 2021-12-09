@@ -1,3 +1,68 @@
+--- 
+title: "Latinx Political Identity"
+author: "Adrian Garcia Hernandez, Mendel Branover"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+---
+--- 
+title: "Latinx Political Identity"
+author: "Adrian Garcia Hernandez, Mendel Branover"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+---
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+# Introduction
+
+test text
+
+<!--chapter:end:index.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Data sources
+
+
+<!--chapter:end:02-data.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Data transformation
+
+<!--chapter:end:03-cleaning.Rmd-->
+
+
+# Missing values
+
+Placeholder
+
+
+
+<!--chapter:end:04-missing.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
 # Results
 
 ```{r}
@@ -78,4 +143,32 @@ mosaic(LATINX4_W58 ~ HISPDISCR_c_W58,
                                   set_varnames = c(HISPDISCR_c_W58 = "Have you been discriminated against?", LATINX4_W58 = "Should Latinx\n be usaged?"))) +
   theme_grey(16)
 ```
+
+
+<!--chapter:end:05-results.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Interactive component
+
+
+
+<!--chapter:end:06-interactive.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Conclusion
+
+
+<!--chapter:end:07-conclusion.Rmd-->
 
