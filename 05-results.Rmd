@@ -43,6 +43,33 @@ mosaic(F_PARTY_FINAL ~ HISPDISCR_c_W58,
 ```
 
 ```{r}
+#knows someone who has been deported or detained vs. political preference
+
+mosaic(F_PARTY_FINAL ~ KNOWDPORT_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(KNOWDPORT_W58 = "Do you know someone who has been deported or detained?", F_PARTY_FINAL = "Party\nPreference"))) +
+  theme_grey(16)
+```
+
+```{r}
+#Thinks what happens to latinos in this country affects them personally vs. political preference
+
+mosaic(F_PARTY_FINAL ~ RACESURV26_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(RACESURV26_W58 = "What happens to other Latinos affects me personally.", F_PARTY_FINAL = "Party\nPreference"))) +
+  theme_grey(16)
+```
+
+
+```{r}
 #Graph of people who have heard term Latinx
 ggplot(ds, aes(LATINX1_W58)) + 
   geom_bar(color = "grey50", fill = "lightblue", width = 1) + 
