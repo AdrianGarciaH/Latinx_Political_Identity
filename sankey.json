@@ -83,8 +83,7 @@
 {"source":"Unallocated Fuel Combustion","target":"Nitrous Oxide","value":"0.4"},
 {"source":"Waste","target":"Landfills","value":"1.7"},
 {"source":"Waste","target":"Waste water - Other Waste","value":"1.5"},
-{"source":"Waste water - Other Waste","target":"Methane","value":"1.2"},
-{"source":"Waste water - Other Waste","target":"Nitrous Oxide","value":"0.3"}
+{"source":"Waste water - Other Waste","target":"Methane","value":"1.2"}
 ] ,
 "nodes": [
 {"name":"Energy"},
