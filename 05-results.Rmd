@@ -1,60 +1,38 @@
 # Results
 
-
-
-# Data sources
-
-
 ```{r}
 library(haven)
 library(tidyverse)
-library(viridis)
+#library(viridis)
 library(patchwork)
-<<<<<<< HEAD
 library(vcd)
 library(ggalluvial)
-=======
-library(hrbrthemes)
-library(circlize)
+#library(hrbrthemes)
+#library(circlize)
+#library(networkD3)
+#library(leaflet)
+library(dplyr)
+library(devtools)
 library(networkD3)
-library(leaflet)
 dataset = read_sav("ATP W58.sav")
->>>>>>> edb01a4cc19d5904694c966210c85bad1fc03597
 ```
 
 
 
 
 ```{r}
-
-
 dataset2 <-  dataset[ , c(1,8,10,11,12,13,14,15,16,17,18,19,21,22,23,32,39,40,41,42,43,44,49,50,51,52,63,64,65,66,67,69,70,71,72,73,74,75,78,79,80,81,82,83,84,85,86,87,88,89,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,110)]
 
-library(tidyverse)
-library(dplyr)
-
 ds= as_factor(dataset2)
-dataset3 = ds[ , c("F_PARTY_FINAL","YEARSINUS_W58")]
+```
 
-<<<<<<< HEAD
+```{r}
+
 ds %>%
   filter(F_AGECAT != 'Refused')%>%
   ggplot(aes(F_AGECAT)) + 
   geom_bar(color = "grey50", fill = "lightblue", width = 1) + theme_grey(16)
-=======
-financial_set = dataset2[ , c("F_PARTY_FINAL","HISPORIGCMB_W58","PERSFIN_W58","LAN1_W58","LAN3_W58","IDENSAL_a_W58","IDENSAL_b_W58","IDENSAL_d_W58","IDENSAL_e_W58","IDENSAL_f_W58")]
->>>>>>> edb01a4cc19d5904694c966210c85bad1fc03597
 
-financial_set <- financial_set %>% filter(LAN1_W58+LAN3_W58 <=6)
-financial_set <- financial_set %>% filter(IDENSAL_b_W58 <90)
-
-#cor(financial_set)
-
-
-
-<<<<<<< HEAD
-```
-```{r}
 #Graph of discrimination versus party preference 
 table_ds1 <- ds %>%
   group_by(HISPDISCR_f_W58, F_PARTY_FINAL) %>%
@@ -74,7 +52,6 @@ mosaic(F_PARTY_FINAL ~ HISPDISCR_f_W58,
 
 
 
-
 ```{r}
 #Graph of people who have heard term Latinx
 
@@ -86,18 +63,8 @@ ds %>%
   xlab("Response") +
   ggtitle("Have you heard of the term 'Latinx'?") +
   theme_grey(16)
-=======
+```
 
-# financial_set$F_PARTY_FINAL <- as_factor(financial_set$F_PARTY_FINAL)
-# financial_set$YEARSINUS_W58 <- as_factor(financial_set$YEARSINUS_W58)
-# financial_set$HISPORIGCMB_W58 <- as_factor(financial_set$HISPORIGCMB_W58)
-
-
-
->>>>>>> edb01a4cc19d5904694c966210c85bad1fc03597
-
-
-<<<<<<< HEAD
 ```{r}
 #Of those who have heard of the term Latinx:
 
@@ -122,7 +89,6 @@ table_ds5 <- ds %>%
 
 ggplot(table_ds5, aes(x=LATINX4_W58, y= prop, fill = HISPDISCR_f_W58)) +geom_col() +
   theme_grey(16)
-
 ```
 
 
@@ -167,11 +133,24 @@ table_ds7 <- ds %>%
 ggplot(table_ds7, aes(x=LAN3_W58, y= prop, fill = F_PARTY_FINAL)) +geom_col(position ='dodge') +
   theme_grey(16)
 ```
-=======
->>>>>>> edb01a4cc19d5904694c966210c85bad1fc03597
 
+
+```{r}
+financial_set = dataset2[ , c("F_PARTY_FINAL","HISPORIGCMB_W58","PERSFIN_W58","LAN1_W58","LAN3_W58","IDENSAL_a_W58","IDENSAL_b_W58","IDENSAL_d_W58","IDENSAL_e_W58","IDENSAL_f_W58")]
+
+
+financial_set <- financial_set %>% filter(LAN1_W58+LAN3_W58 <=6)
+financial_set <- financial_set %>% filter(IDENSAL_b_W58 <90)
+
+#cor(financial_set)
+# financial_set$F_PARTY_FINAL <- as_factor(financial_set$F_PARTY_FINAL)
+# financial_set$YEARSINUS_W58 <- as_factor(financial_set$YEARSINUS_W58)
+# financial_set$HISPORIGCMB_W58 <- as_factor(financial_set$HISPORIGCMB_W58)
+```
+
+```{r}
 # PUERTO RICO counted here as outside US
-
+dataset3 = ds[ , c("F_PARTY_FINAL","YEARSINUS_W58")]
 dataset3  <- dataset3 %>%
      mutate(YEARSINUS_W58 = ifelse(is.na(YEARSINUS_W58),"Not Born in US","Born in US"))
 
@@ -266,6 +245,5 @@ sankeyNetwork(Links = data_long, Nodes = nodes,
 # 
 # fin_set <- financial_set %>% filter(!(is.na(YEARSINUS_W58)))
 # hist(as.numeric(fin_set$YEARSINUS_W58))
-
 
 ```
