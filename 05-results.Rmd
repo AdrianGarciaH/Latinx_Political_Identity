@@ -14,6 +14,9 @@ library(ggalluvial)
 library(dplyr)
 library(devtools)
 library(networkD3)
+library(patchwork)
+library(gridExtra)
+library(gtable)
 dataset = read_sav("ATP W58.sav")
 ```
 
@@ -24,14 +27,15 @@ dataset = read_sav("ATP W58.sav")
 dataset2 <-  dataset[ , c(1,8,10,11,12,13,14,15,16,17,18,19,21,22,23,32,39,40,41,42,43,44,49,50,51,52,63,64,65,66,67,69,70,71,72,73,74,75,78,79,80,81,82,83,84,85,86,87,88,89,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,110)]
 
 ds= as_factor(dataset2)
-```
-
-```{r}
 
 ds %>%
   filter(F_AGECAT != 'Refused')%>%
   ggplot(aes(F_AGECAT)) + 
   geom_bar(color = "grey50", fill = "lightblue", width = 1) + theme_grey(16)
+```
+
+```{r}
+#Question 2:
 
 #Graph of discrimination versus party preference 
 table_ds1 <- ds %>%
@@ -48,11 +52,6 @@ mosaic(F_PARTY_FINAL ~ HISPDISCR_f_W58,
                                   set_varnames = c(HISPDISCR_f_W58 = "Have you expereinced discrimination?", F_PARTY_FINAL = "Party\nPreference"))) +
   theme_grey(16)
 
-```
-
-
-
-```{r}
 #Graph of people who have heard term Latinx
 
 ds %>%
@@ -63,9 +62,7 @@ ds %>%
   xlab("Response") +
   ggtitle("Have you heard of the term 'Latinx'?") +
   theme_grey(16)
-```
 
-```{r}
 #Of those who have heard of the term Latinx:
 
 #discriminated against vs. Latinx usage
@@ -89,10 +86,9 @@ table_ds5 <- ds %>%
 
 ggplot(table_ds5, aes(x=LATINX4_W58, y= prop, fill = HISPDISCR_f_W58)) +geom_col() +
   theme_grey(16)
-```
 
+# Flowchart attempt
 
-```{r}
 ds1 = select(ds, c('HISPDISCR_f_W58', 'KNOWDPORT_W58', 'RACESURV26_W58', 'F_PARTY_FINAL')) 
 
 table_ds2 <- ds1 %>%
@@ -115,6 +111,7 @@ ggplot(table_ds2,
 ```{r}
 #Question 3
 
+#Conversational Spanish vs. political preference 
 table_ds6 <- ds %>%
   filter(LAN1_W58 != 'Refused', F_PARTY_FINAL != 'Refused', F_PARTY_FINAL != 'Something else') %>%
   group_by(LAN1_W58, F_PARTY_FINAL)%>%
@@ -124,6 +121,7 @@ table_ds6 <- ds %>%
 ggplot(table_ds6, aes(x=LAN1_W58, y= prop, fill = F_PARTY_FINAL)) +geom_col(position ='dodge') +
   theme_grey(16)
 
+#Conversational English vs. political preference 
 table_ds7 <- ds %>%
   filter(LAN3_W58 != 'Refused', F_PARTY_FINAL != 'Refused', F_PARTY_FINAL != 'Something else') %>%
   group_by(LAN3_W58, F_PARTY_FINAL)%>%
@@ -132,6 +130,109 @@ table_ds7 <- ds %>%
 
 ggplot(table_ds7, aes(x=LAN3_W58, y= prop, fill = F_PARTY_FINAL)) +geom_col(position ='dodge') +
   theme_grey(16)
+
+#Spoken language proficiency vs. political preference
+table_ds8 = select(ds, 'LAN1_W58', 'LAN3_W58', 'F_PARTY_FINAL')
+
+table_ds8 <- table_ds8 %>%
+  filter(LAN3_W58 != 'Refused', LAN1_W58 != 'Refused', F_PARTY_FINAL != 'Refused') %>%
+  mutate(LANPROF = case_when((LAN1_W58 == 'Pretty well' | LAN1_W58 == 'Very well') & (LAN3_W58 == 'Pretty well' | LAN3_W58 == 'Very well') ~ 'Bilingual', 
+                             (LAN1_W58 == 'Pretty well' | LAN1_W58 == 'Very well') & (LAN3_W58 == 'Just a little' | LAN3_W58 == 'Not at all') ~ 'Spanish', 
+                             (LAN1_W58 == 'Just a little' | LAN1_W58 == 'Not at all') & (LAN3_W58 == 'Pretty well' | LAN3_W58 == 'Very well') ~ 'English'))%>%
+  filter(LANPROF != 'NA')
+
+#Summary graph of language proficiency
+ggplot(table_ds8, aes(fct_infreq(LANPROF))) + 
+  geom_bar(color = "grey50", fill = "lightblue", width = 1) + 
+  ylab("Count") + 
+  xlab("Conversational Language Proficiency") +
+  ggtitle("Conversational Language Proficiency") +
+  theme_grey(16)
+
+#Language proficiency vs. political preference:
+table_ds9 <- table_ds8 %>%
+  group_by(LANPROF, F_PARTY_FINAL)%>%
+  summarize(n = n()) %>%
+  mutate(prop = n/sum(n))
+
+ggplot(table_ds9, aes(x=fct_infreq(LANPROF), y= prop, fill = F_PARTY_FINAL)) +
+  geom_col(position ='dodge') +
+  ylab('Percentage') +
+  xlab('Language Proficiency') +
+  theme_grey(16)
+
+#Conversational Spanish vs. elements of being Hispanic
+
+#Speaking Spanish vs. importance of Spanish to the Hispanic experience
+p1 <- mosaic(IDENSAL_a_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_a_W58 = "How important is speaking Spanish\nto the Hispanic expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
+
+#Speaking Spanish vs. importance of having two Hispanic parents
+p2 <- mosaic(IDENSAL_e_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_e_W58 = "How important is having two hispanic parents\n to the Hispanic Expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
+
+#Speaking Spanish vs. importance of socializing with other Hispanics
+p3 <- mosaic(IDENSAL_d_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_d_W58 = "How important is socializing with other Hispanics\n to the Hispanic Expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
+
+#Speaking Spanish vs. importance of having a Spanish last name
+p4 <- mosaic(IDENSAL_f_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_f_W58 = "How important is having a Spanish last name\n to the Hispanic Expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
+
+#Speaking Spanish vs. importance of Hispanic cultural events 
+p5 <- mosaic(IDENSAL_b_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_b_W58 = "How important is\nattending Hispanic cultural events\nto the Hispanic expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
+
+#Speaking Spanish vs. importance of wearing Hispanic attire
+p6 <- mosaic(IDENSAL_c_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_c_W58 = "How important is wearing Hispanic attire\nto the Hispanic Expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
+
+
+#Speaking Spanish vs. importance of being catholic
+#mosaic(IDENSAL_g_W58 ~ LAN1_W58,
+#       data = ds,
+#       direction = c("v", "h"),
+#       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+#       spacing = spacing_equal(sp = unit(0, "lines")),
+#       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+#                                  set_varnames = c(IDENSAL_g_W58 = "How important is being Catholic\n to the Hispanic Experience?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+#  theme_grey(16)
 ```
 
 
@@ -215,59 +316,18 @@ dataset4 = ds[ , c("F_PARTY_FINAL","YEARSINUS_W58","HISPORIGCMB_W58")]
 
 dataset4  <- dataset4 %>%
      mutate(YEARSINUS_W58 = ifelse(is.na(YEARSINUS_W58),"Not Born in US","Born in US"))
-```
-
-
-```{r}
-dataset5 = ds[ , c("PERSFIN_W58","HISPORIGCMB_W58")]
-data_long <- aggregate(dataset5, by=list(dataset5$PERSFIN_W58, dataset5$HISPORIGCMB_W58), FUN=length)
-
-
-dataset6 = ds[ , c("F_PARTY_FINAL","PERSFIN_W58")]
-data_long2 <- aggregate(dataset6, by=list(dataset6$F_PARTY_FINAL, dataset6$PERSFIN_W58), FUN=length)
-
-data_long <- subset (data_long, select = -HISPORIGCMB_W58)
-data_long2 <- subset (data_long2, select = -F_PARTY_FINAL)
-
-data_long <- rbind(data_long,data_long2)
-
-names(data_long)[1] <- 'target'
-names(data_long)[2] <- 'source'
-names(data_long)[3] <- 'value'
-
-data_long <- data_long %>% filter(target != "Refused")
-data_long <- data_long %>% filter(source != "Refused")
-
-
-nodes <- data.frame(name=c(as.character(data_long$source), as.character(data_long$target)) %>% unique())
-
-data_long$IDsource=match(data_long$source, nodes$name)-1 
-data_long$IDtarget=match(data_long$target, nodes$name)-1
 
 
 
-ColourScal ='d3.scaleOrdinal() .range(["#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#FF0000","#0015BC","#1d8a0f","#1d8a0f"])'
-
-sankeyNetwork(Links = data_long, Nodes = nodes,
-                     Source = "IDsource", Target = "IDtarget",
-                     Value = "value", NodeID = "name", 
-                     sinksRight=TRUE, colourScale=ColourScal, nodeWidth=40, fontSize=13, nodePadding=20)
-```
 
 
-```{r}
+
 dataset5 = ds[ , c("F_PARTY_FINAL","HISPORIGCMB_W58")]
 data_long <- aggregate(dataset5, by=list(dataset5$F_PARTY_FINAL, dataset5$HISPORIGCMB_W58), FUN=length)
 
-
-
 names(data_long)[1] <- 'target'
 names(data_long)[2] <- 'source'
 names(data_long)[3] <- 'value'
-
-
-data_long <- data_long %>% filter(target != "Refused")
-data_long <- data_long %>% filter(source != "Refused")
 
 nodes <- data.frame(name=c(as.character(data_long$source), as.character(data_long$target)) %>% unique())
 
@@ -275,53 +335,14 @@ data_long$IDsource=match(data_long$source, nodes$name)-1
 data_long$IDtarget=match(data_long$target, nodes$name)-1
 
 
-
-ColourScal ='d3.scaleOrdinal() .range(["#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#FF0000","#0015BC","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f"])'
-
-sankeyNetwork(Links = data_long, Nodes = nodes,
-                     Source = "IDsource", Target = "IDtarget",
-                     Value = "value", NodeID = "name", 
-                     sinksRight=TRUE, colourScale=ColourScal, nodeWidth=40, fontSize=13, nodePadding=20)
-```
-
-
-```{r}
-#Third flow graph: origin - party - birthplace
-dataset5 = dataset3[ , c("YEARSINUS_W58","F_PARTY_FINAL")]
-data_long <- aggregate(dataset5, by=list(dataset5$YEARSINUS_W58, dataset5$F_PARTY_FINAL), FUN=length)
-
-
-dataset6 = ds[ , c("F_PARTY_FINAL","HISPORIGCMB_W58")]
-data_long2 <- aggregate(dataset6, by=list(dataset6$F_PARTY_FINAL, dataset6$HISPORIGCMB_W58), FUN=length)
-
-data_long <- subset (data_long, select = -YEARSINUS_W58)
-data_long2 <- subset (data_long2, select = -HISPORIGCMB_W58)
-
-data_long <- rbind(data_long,data_long2)
-
-names(data_long)[1] <- 'target'
-names(data_long)[2] <- 'source'
-names(data_long)[3] <- 'value'
-
-
-data_long <- data_long %>% filter(target != "Refused")
-data_long <- data_long %>% filter(source != "Refused")
-
-nodes <- data.frame(name=c(as.character(data_long$source), as.character(data_long$target)) %>% unique())
-
-data_long$IDsource=match(data_long$source, nodes$name)-1 
-data_long$IDtarget=match(data_long$target, nodes$name)-1
-
-
-
-ColourScal ='d3.scaleOrdinal() .range(["#0015BC","#FF0000","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f"])'
-
-
+ColourScal ='d3.scaleOrdinal() .range(["#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","Black","#FF0000","#0015BC"])'
 
 sankeyNetwork(Links = data_long, Nodes = nodes,
                      Source = "IDsource", Target = "IDtarget",
                      Value = "value", NodeID = "name", 
                      sinksRight=TRUE, colourScale=ColourScal, nodeWidth=40, fontSize=13, nodePadding=20)
+
+
 # 
 # fin_set <- financial_set %>% filter(!(is.na(YEARSINUS_W58)))
 # hist(as.numeric(fin_set$YEARSINUS_W58))
