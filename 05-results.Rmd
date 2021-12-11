@@ -122,8 +122,17 @@ dataset4  <- dataset4 %>%
 
 
 
-dataset5 = ds[ , c("F_PARTY_FINAL","HISPORIGCMB_W58")]
-data_long <- aggregate(dataset5, by=list(dataset5$F_PARTY_FINAL, dataset5$HISPORIGCMB_W58), FUN=length)
+dataset5 = ds[ , c("PERSFIN_W58","HISPORIGCMB_W58")]
+data_long <- aggregate(dataset5, by=list(dataset5$PERSFIN_W58, dataset5$HISPORIGCMB_W58), FUN=length)
+
+
+dataset6 = ds[ , c("F_PARTY_FINAL","PERSFIN_W58")]
+data_long2 <- aggregate(dataset6, by=list(dataset6$F_PARTY_FINAL, dataset6$PERSFIN_W58), FUN=length)
+
+data_long <- subset (data_long, select = -HISPORIGCMB_W58)
+data_long2 <- subset (data_long2, select = -F_PARTY_FINAL)
+
+data_long <- rbind(data_long,data_long2)
 
 names(data_long)[1] <- 'target'
 names(data_long)[2] <- 'source'
@@ -135,7 +144,7 @@ data_long$IDsource=match(data_long$source, nodes$name)-1
 data_long$IDtarget=match(data_long$target, nodes$name)-1
 
 
-ColourScal ='d3.scaleOrdinal() .range(["#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","Black","#FF0000","#0015BC"])'
+ColourScal ='d3.scaleOrdinal() .range(["#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","Black","#FF0000","#0015BC"])'
 
 sankeyNetwork(Links = data_long, Nodes = nodes,
                      Source = "IDsource", Target = "IDtarget",
