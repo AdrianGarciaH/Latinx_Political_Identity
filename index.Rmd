@@ -7,4 +7,13 @@ site: bookdown::bookdown_site
 
 # Introduction
 
-test text
+
+For this project we have chosen to explore possible relationships between identity and the political views of Latin Americans in the United States. In the current political climate, one often hears references to the Latino vote, an assumption that claims Latin Americans act as one. In reality, the Latin American population is highly diverse and composed of immigrants from many countries in South America as well as a large population of American born Latin American citizens.  We hope to explore the multiple facets of the Latin American experience and display the diversity and intersectionality of the largest minority group in the country. Specifically, we want to explore whether different subgroups of Latin Americans have different political preferences. To guide this work, we have decided to focus on the following questions: 
+
+1. Is there a relationship between the birth status of Latin Americans in the U.S. and their political views? Are Latin Americans born in the U.S. more or less likely to support the Republican party? Moreover, for foreign-born Latin Americans, is there a relationship between their birth country and their political preferences? 
+
+2. Does experiencing discrimination based on ethnic identity lead to more liberal political views (as exemplified by supporting the Democratic party)? Furthermore, are people who have experienced discrimination more likely to embrace gender-neutral ways of expressing the Latin experience? 
+
+3. What influence does language proficiency have on political preference? Is there a relationship between Spanish fluency and people’s views on the importance of certain cultural signifiers to the Latin American experience? 
+
+To explore these questions, we’ve produced a series of visualizations using data collected through a large survey of Latin Americans by the Pew Research Center. In the next few chapters, we will discuss our data source, data manipulations, and the results of our exploratory analysis. 
