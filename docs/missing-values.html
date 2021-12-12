@@ -24,7 +24,7 @@
 <meta name="author" content="Adrian Garcia Hernandez, Mendel Branover" />
 
 
-<meta name="date" content="2021-12-09" />
+<meta name="date" content="2021-12-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -53,6 +53,10 @@
 
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/d3-4.5.0/d3.min.js"></script>
+<script src="libs/sankey-1/sankey.js"></script>
+<script src="libs/sankeyNetwork-binding-0.4/sankeyNetwork.js"></script>
 
 
 
@@ -105,8 +109,8 @@
 <p>When we run our missing patterns function on our new dataset we find that the vast majority of our variables don’t include any missing values. However, we have so many variables that our graph is very difficult to interpret.</p>
 <p><img src="finalproj_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>To solve this, we created a new chart by only selecting the variables that have missing values from our new database. By doing so, we can see that only 6 variables of interest contain missing data. The new graph of missing patterns is much clearer and tells us that, with the exception of the ‘HISPDIS’ variable, missing values are very common for most of these variables.</p>
-<pre><code>## [1] &quot;HISPORIG2_W58&quot;   &quot;LATINX3_W58&quot;     &quot;LATINX4_W58&quot;     &quot;HISPDISCR_d_W58&quot;
-## [5] &quot;YEARSINUS_W58&quot;   &quot;F_PARTYLN_FINAL&quot;</code></pre>
+<pre><code>## [1] &quot;HISPORIG2_W58&quot;   &quot;LATINX3_W58&quot;     &quot;LATINX4_W58&quot;     &quot;HISPDISCR_d_W58&quot; &quot;YEARSINUS_W58&quot;  
+## [6] &quot;F_PARTYLN_FINAL&quot;</code></pre>
 <p><img src="finalproj_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>By taking a look at the survey set up we realized that most of those missing values are there due to the nature of the survey itself.</p>
 <p>HISPORI represents a survey question that asks participants to rank which heritage they identify with the most. However, the question is only presented if the respondent listed that they identified with more than one heritage in a previous question. Therefore, the fact that around 85% of rows are missing a value for this question means that most of the respondents identify with only 1 heritage and therefore were not presented with this question.</p>
