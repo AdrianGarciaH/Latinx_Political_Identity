@@ -32,6 +32,8 @@ ds %>%
   filter(F_AGECAT != 'Refused')%>%
   ggplot(aes(F_AGECAT)) + 
   geom_bar(color = "grey50", fill = "lightblue", width = 1) + theme_grey(16)
+
+colnames(ds)
 ```
 
 ```{r}

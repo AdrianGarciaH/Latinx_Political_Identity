@@ -1,15 +1,19 @@
 # Data sources
 
+## Survey Origins 
 The source of data for this project was the 2019 National Survey of Latinos carried out by the Ipsos Public Affairs Research institute on behalf of the Pew Research Center. The Pew Research Center conducts public opinion polling and demographic research with the goal of informing the American public about the trends and issues at the forefront of the American political and social climate. They are non-partisan, self-described ‘fact thank’, non-profit organization and therefore a reliable, unbiased source of information.   
 
 This survey was the 58th wave of the  American Trends Panel survey and consisted of 3030 panel members who were presented with an extensive survey in a mostly digital format from December 3, 2019 to December 22, 2019. It was presented both in English and Spanish depending on the respondents’ preference and thus encompasses the views of Latino’s who are not English speakers. 
 
+## Target Population
 The target population for the survey consisted of non-institutionalized adults (age 18 and over), residing in the United States. The sample was chosen through KnowledgePanel, an online, probability-based recruitment tool that allowed for a random selection of survey takers so that the results can be said to properly represent the U.S. Hispanic population. 
 
+## Dataset Description
 The dataset itself includes 3030 entries, one for each survey participant. It contains 110 columns or variables encoding a response to each of the questions presented on the survey. All responses are encoded as factors (with the exception of the respondent’s age and, if born outside the U.S., the number of years residing in the U.S.). It includes information on such topics as the respondents political preference, ethnic self-identification, birth status, age, educational level, Spanish and English proficiency, expereince with ethinic-based discrimination, opinions regarding the importance of particular cultural signifiers, and broad opinions about the Trump administration. 
 
 For our project, we decided to ignore the data regarding the Trump administration. We were mostly interested in overall political preference and felt equating political preference with approval of the Trump administration would skew our results due to the controversial nature of the Trump administration. Once this information was filtered out, we were left with a dataset of 3030 entries and 67 possible variables of interest to explore. 
 
+## Issues With Our Data
 The main issue with this dataset was the fact that the great majority of variables included are categorical and thus limited our graph visualization possibilities. Moreover, certain variables such as political preference were constructed by the survey administrators based on the respondents’ responses to previous questions. Therefore there is a possibility that political preference assigned to a respondent might not completely align with the respondent’s political self-identification. However, we have no reason to fear there was bias in the assignment of political preference as the Pew Research Institute is a non-partisan organization.
 
 A possible other source of bias on our analysis of political preference came from the nature of the survey sample since only residents over 18 years old were included. This means that we don't have data on younger generations of Latin Americans. Therefore, we are not able to explore whether the generations that will come into voting age in the next few years have a preference for a political party over another. Moreover, since there is a probability that younger respondents are more open to gender-neutral terms such as Latinx, our analysis of the approval of this term by the Latin American population is somewhat flawed.  
