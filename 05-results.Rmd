@@ -25,6 +25,10 @@ Is there a relationship between the birth status of Latin Americans in the U.S. 
 We began our exploration of this question by exploring the proportion of survey respondents who prefer each political party. The following bar graph displays the proportion of Latinos who prefer each of the major political parties in the United States.
 
 ```{r}
+dataset2 <-  dataset[ , c(1,8,10,11,12,13,14,15,16,17,18,19,21,22,23,32,39,40,41,42,43,44,49,50,51,52,63,64,65,66,67,69,70,71,72,73,74,75,78,79,80,81,82,83,84,85,86,87,88,89,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,110)]
+
+ds= as_factor(dataset2)
+
 financial_set = dataset2[ , c("F_PARTY_FINAL","HISPORIGCMB_W58","PERSFIN_W58","LAN1_W58","LAN3_W58","IDENSAL_a_W58","IDENSAL_b_W58","IDENSAL_d_W58","IDENSAL_e_W58","IDENSAL_f_W58")]
 
 
@@ -84,7 +88,7 @@ ggplot(temp, aes(x = F_PARTY_FINAL, y = perc, fill = factor(..x..))) + geom_bar(
     geom_text(aes(label = sprintf("%1.2f%%", 100*perc), vjust = -0.2))+ scale_fill_manual(values=c("#0015BC", "#FF0000", "Grey","Grey","Grey"))
 
 ```
-As evidenced in this graph, the majority of Latinos, 41.25%, support the Democratic party, followed by 24.69% who support independent candidates and 21.25% who prefer the Republican party. In contrast, a Gallop poll from December 2019 (the date when our survey data was collected), found that overall, 28% of all Americans supported the Republican and Democrat parties each while 41% of Americans supported independent candidates. In comparison, we can clearly see that there seems to be a trend where Latinos support the Democratic party more heavily than the overall American population. The same Gallop poll asked those who support independent candidates whether they leaned more towards the Republican or Democratic parties and found that respondents are equally split between both. We don't have any data regarding the leanings of Latino respondents who consider themselves independent but this could be an interesting question to explore in the future. The strong support of the Democratic party observed from this graph, however, might support the hypothesis that a similar split in preference could be found within the subgroup of Latinos who support independent candidates.    
+As evidenced in this graph, the majority of Latinos, 41.25%, support the Democrat party, followed by 24.69% who support independent candidates and 21.25% who prefer the Republican party. In contrast, a Gallop poll from December 2019 (the date when our survey data was collected), found that overall, 28% of all Americans supported the Republican and Democrat parties each while 41% of Americans supported independent candidates. In comparison, we can clearly see that there seems to be a trend where Latinos support the Democratic party more heavily than the overall American population. The same Gallop poll asked those who support independent candidates whether they leaned more towards the Republican or Democrat parties and found that respondents are equally split between both. We don't have any data regarding the leanings of Latino respondents who consider themselves independent but this could be an interesting question to explore in the future. The strong support of the Democrat party observed from this graph, however, might support the hypothesis that a similar split in preference could be found within the subgroup of Latinos who support independent candidates.    
 https://news.gallup.com/poll/15370/party-affiliation.aspx
 
 To explore whether this trend holds for Latinos born outside of the united states, we graphed party preference faceted on birth status.
@@ -175,19 +179,70 @@ sankeyNetwork(Links = data_long, Nodes = nodes,
                      sinksRight=TRUE, colourScale=ColourScal, nodeWidth=40, fontSize=13, nodePadding=20)
 ```
 
+The flow chart shows that for every nationality, support for the Republican party is proportionally smaller as for the subset of immigrants who report their financial health to be in fair or poor shape. It is also interesting to note that although Cubans and Mexicans make up most of the foreign born residents, their proportion of respondents who reported their financial health as being in excellent shape is not significantly larger than those of other nationalities.  
+
+The flow chart below serves to summarize some of our results for this question. We can see that support for each party does very with the birth country of the respondent and that the country of birth also influences political preferences. In particular, it shows that Cubans tend to be ovverly represented in thei support for the Republican party. 
 
 ```{r}
-dataset2 <-  dataset[ , c(1,8,10,11,12,13,14,15,16,17,18,19,21,22,23,32,39,40,41,42,43,44,49,50,51,52,63,64,65,66,67,69,70,71,72,73,74,75,78,79,80,81,82,83,84,85,86,87,88,89,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,110)]
+#Third flow graph: origin - party - birthplace
+dataset5 = dataset3[ , c("YEARSINUS_W58","F_PARTY_FINAL")]
+data_long <- aggregate(dataset5, by=list(dataset5$YEARSINUS_W58, dataset5$F_PARTY_FINAL), FUN=length)
 
-ds= as_factor(dataset2)
+
+dataset6 = ds[ , c("F_PARTY_FINAL","HISPORIGCMB_W58")]
+data_long2 <- aggregate(dataset6, by=list(dataset6$F_PARTY_FINAL, dataset6$HISPORIGCMB_W58), FUN=length)
+
+data_long <- subset (data_long, select = -YEARSINUS_W58)
+data_long2 <- subset (data_long2, select = -HISPORIGCMB_W58)
+
+data_long <- rbind(data_long,data_long2)
+
+names(data_long)[1] <- 'target'
+names(data_long)[2] <- 'source'
+names(data_long)[3] <- 'value'
+
+
+data_long <- data_long %>% filter(target != "Refused")
+data_long <- data_long %>% filter(source != "Refused")
+
+nodes <- data.frame(name=c(as.character(data_long$source), as.character(data_long$target)) %>% unique())
+
+data_long$IDsource=match(data_long$source, nodes$name)-1 
+data_long$IDtarget=match(data_long$target, nodes$name)-1
+
+
+
+ColourScal ='d3.scaleOrdinal() .range(["#0015BC","#FF0000","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f"])'
+
+
+
+sankeyNetwork(Links = data_long, Nodes = nodes,
+                     Source = "IDsource", Target = "IDtarget",
+                     Value = "value", NodeID = "name", 
+                     sinksRight=TRUE, colourScale=ColourScal, nodeWidth=40, fontSize=13, nodePadding=20)
+# 
+# fin_set <- financial_set %>% filter(!(is.na(YEARSINUS_W58)))
+# hist(as.numeric(fin_set$YEARSINUS_W58))
 ```
+## Question 2
+Does experiencing discrimination based on ethnic identity lead to more liberal political views (as exemplified by supporting the Democratic party)? Furthermore, are people who have experienced discrimination more likely to embrace gender-neutral ways of expressing the Latin experience?
+
+### Question 2 Results:
+We begin our exploratory analysis of this question by creating a Mosaic plot mapping the relative proportions of people who have experienced ethnic discrimination against their party preference. We define experiencing ethnic discrimination as experiencing at least one of the following in the last 12 months:
+
+1. Been called an offensive name because of being Hispanic.
+2. Been criticized for speaking Spanish in public.
+3. Receiving a remark that they should go back to their home country.
+4. Been treated unfairly because of their Hispanic background. 
+
+The graph shows that the majority of respondents have not experienced a form of ethnic discrimination in the last 12 months. It also points to a possible relationship between experiencing discrimination and the respondent's political preferences as less respondents who have experienced discrimination support the Republican party. There does not appear to be a relationship between discrimination status and support for independent candidates.   
 
 ```{r}
 
-ds %>%
-  filter(F_AGECAT != 'Refused')%>%
-  ggplot(aes(F_AGECAT)) + 
-  geom_bar(color = "grey50", fill = "lightblue", width = 1) + theme_grey(16)
+#ds %>%
+#  filter(F_AGECAT != 'Refused')%>%
+#  ggplot(aes(F_AGECAT)) + 
+#  geom_bar(color = "grey50", fill = "lightblue", width = 1) + theme_grey(16)
 
 #Graph of discrimination versus party preference 
 table_ds1 <- ds %>%
@@ -206,11 +261,9 @@ mosaic(F_PARTY_FINAL ~ HISPDISCR_f_W58,
 
 ```
 
-
+For the next section of this question, we are interested in possible relationship between having experienced discrimination and a person's willingness to use the gender-neutral term Latinx to refer to the Latin American population. The Hypothesis is that perhaps people who experience discrimination are  more aware of its discomfort and thus more willing to use terms that are more inclusive of others. To explore this, we first graph how many people in our sample have actually heard the term Latinx before. As we can see, only about 750 out of 3030 respondents have heard of this term.  
 
 ```{r}
-#Graph of people who have heard term Latinx
-
 ds %>%
   filter(LATINX1_W58 != 'Refused') %>%
   ggplot(aes(LATINX1_W58)) + 
@@ -221,29 +274,40 @@ ds %>%
   theme_grey(16)
 ```
 
+We will focus on the subset of respondents who have heard the term before and explore their willingness to use the term to describe themselves as well as their belief that the term should be used to describe the whole of the Hispanic population.  
+
+The graph below notes the percentages of people who have heard the term Latinx before and their willingness to use it to describe themselves depending on whether they have experienced discrimination. 
+
 ```{r}
 #Of those who have heard of the term Latinx:
 
 #discriminated against vs. Latinx usage
 table_ds4 <- ds %>%
   filter(LATINX1_W58 == 'Yes', HISPDISCR_f_W58 != 'Refused', LATINX3_W58 != 'Refused') %>%
-  group_by(LATINX3_W58, HISPDISCR_f_W58)%>%
+  group_by(HISPDISCR_f_W58, LATINX3_W58)%>%
   summarize(n = n()) %>%
   mutate(prop = n/sum(n))
   
-ggplot(table_ds4, aes(x=LATINX3_W58, y= prop, fill = HISPDISCR_f_W58)) +geom_col() +
+ggplot(table_ds4, aes(x=HISPDISCR_f_W58, y= prop, fill = LATINX3_W58)) +
+  geom_col() +
+  xlab('Have you expereinced discrimination in the last 12 months?') +
+  ylab('Percentage') +
   theme_grey(16)
   
+```
 
+The main observation from this graph is that, across the board, very few respondents use the term Latinx to describe themselves. However, it does appear that respondents who have experienced discrimination are about twice as likely to describe themselves as Latinx than respondents who have not experienced discrimination in the last 12 months. 
+
+```{r}
 #discriminated against vs belief that Latinx should be used to describe the latino population
 
 table_ds5 <- ds %>%
   filter(LATINX1_W58 == 'Yes', HISPDISCR_f_W58 != 'Refused', LATINX4_W58 != 'Refused') %>%
-  group_by(LATINX4_W58, HISPDISCR_f_W58)%>%
+  group_by(HISPDISCR_f_W58, LATINX4_W58)%>%
   summarize(n = n()) %>%
   mutate(prop = n/sum(n))
 
-ggplot(table_ds5, aes(x=LATINX4_W58, y= prop, fill = HISPDISCR_f_W58)) +geom_col() +
+ggplot(table_ds5, aes(x=HISPDISCR_f_W58, y= prop, fill = LATINX4_W58)) +geom_col() +
   theme_grey(16)
 ```
 
@@ -295,44 +359,129 @@ ggplot(table_ds7, aes(x=LAN3_W58, y= prop, fill = F_PARTY_FINAL)) +geom_col(posi
 
 
 ```{r}
-#Third flow graph: origin - party - birthplace
-dataset5 = dataset3[ , c("YEARSINUS_W58","F_PARTY_FINAL")]
-data_long <- aggregate(dataset5, by=list(dataset5$YEARSINUS_W58, dataset5$F_PARTY_FINAL), FUN=length)
+#Question 3
+
+#Conversational Spanish vs. political preference 
+table_ds6 <- ds %>%
+  filter(LAN1_W58 != 'Refused', F_PARTY_FINAL != 'Refused', F_PARTY_FINAL != 'Something else') %>%
+  group_by(LAN1_W58, F_PARTY_FINAL)%>%
+  summarize(n = n()) %>%
+  mutate(prop = n/sum(n))
+
+ggplot(table_ds6, aes(x=LAN1_W58, y= prop, fill = F_PARTY_FINAL)) +geom_col(position ='dodge') +
+  theme_grey(16)
+
+#Conversational English vs. political preference 
+table_ds7 <- ds %>%
+  filter(LAN3_W58 != 'Refused', F_PARTY_FINAL != 'Refused', F_PARTY_FINAL != 'Something else') %>%
+  group_by(LAN3_W58, F_PARTY_FINAL)%>%
+  summarize(n = n()) %>%
+  mutate(prop = n/sum(n))
+
+ggplot(table_ds7, aes(x=LAN3_W58, y= prop, fill = F_PARTY_FINAL)) +geom_col(position ='dodge') +
+  theme_grey(16)
+
+#Spoken language proficiency vs. political preference
+table_ds8 = select(ds, 'LAN1_W58', 'LAN3_W58', 'F_PARTY_FINAL')
+
+table_ds8 <- table_ds8 %>%
+  filter(LAN3_W58 != 'Refused', LAN1_W58 != 'Refused', F_PARTY_FINAL != 'Refused') %>%
+  mutate(LANPROF = case_when((LAN1_W58 == 'Pretty well' | LAN1_W58 == 'Very well') & (LAN3_W58 == 'Pretty well' | LAN3_W58 == 'Very well') ~ 'Bilingual', 
+                             (LAN1_W58 == 'Pretty well' | LAN1_W58 == 'Very well') & (LAN3_W58 == 'Just a little' | LAN3_W58 == 'Not at all') ~ 'Spanish', 
+                             (LAN1_W58 == 'Just a little' | LAN1_W58 == 'Not at all') & (LAN3_W58 == 'Pretty well' | LAN3_W58 == 'Very well') ~ 'English'))%>%
+  filter(LANPROF != 'NA')
+
+#Summary graph of language proficiency
+ggplot(table_ds8, aes(fct_infreq(LANPROF))) + 
+  geom_bar(color = "grey50", fill = "lightblue", width = 1) + 
+  ylab("Count") + 
+  xlab("Conversational Language Proficiency") +
+  ggtitle("Conversational Language Proficiency") +
+  theme_grey(16)
+
+#Language proficiency vs. political preference:
+table_ds9 <- table_ds8 %>%
+  group_by(LANPROF, F_PARTY_FINAL)%>%
+  summarize(n = n()) %>%
+  mutate(prop = n/sum(n))
+
+ggplot(table_ds9, aes(x=fct_infreq(LANPROF), y= prop, fill = F_PARTY_FINAL)) +
+  geom_col(position ='dodge') +
+  ylab('Percentage') +
+  xlab('Language Proficiency') +
+  theme_grey(16)
+
+#Conversational Spanish vs. elements of being Hispanic
+
+#Speaking Spanish vs. importance of Spanish to the Hispanic experience
+p1 <- mosaic(IDENSAL_a_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_a_W58 = "How important is speaking Spanish\nto the Hispanic expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
+
+#Speaking Spanish vs. importance of having two Hispanic parents
+p2 <- mosaic(IDENSAL_e_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_e_W58 = "How important is having two hispanic parents\n to the Hispanic Expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
+
+#Speaking Spanish vs. importance of socializing with other Hispanics
+p3 <- mosaic(IDENSAL_d_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_d_W58 = "How important is socializing with other Hispanics\n to the Hispanic Expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
+
+#Speaking Spanish vs. importance of having a Spanish last name
+p4 <- mosaic(IDENSAL_f_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_f_W58 = "How important is having a Spanish last name\n to the Hispanic Expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
+
+#Speaking Spanish vs. importance of Hispanic cultural events 
+p5 <- mosaic(IDENSAL_b_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_b_W58 = "How important is\nattending Hispanic cultural events\nto the Hispanic expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
+
+#Speaking Spanish vs. importance of wearing Hispanic attire
+p6 <- mosaic(IDENSAL_c_W58 ~ LAN1_W58,
+       data = ds,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(0, "lines")),
+       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+                                  set_varnames = c(IDENSAL_c_W58 = "How important is wearing Hispanic attire\nto the Hispanic Expereince?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+  theme_grey(16)
 
 
-dataset6 = ds[ , c("F_PARTY_FINAL","HISPORIGCMB_W58")]
-data_long2 <- aggregate(dataset6, by=list(dataset6$F_PARTY_FINAL, dataset6$HISPORIGCMB_W58), FUN=length)
-
-data_long <- subset (data_long, select = -YEARSINUS_W58)
-data_long2 <- subset (data_long2, select = -HISPORIGCMB_W58)
-
-data_long <- rbind(data_long,data_long2)
-
-names(data_long)[1] <- 'target'
-names(data_long)[2] <- 'source'
-names(data_long)[3] <- 'value'
-
-
-data_long <- data_long %>% filter(target != "Refused")
-data_long <- data_long %>% filter(source != "Refused")
-
-nodes <- data.frame(name=c(as.character(data_long$source), as.character(data_long$target)) %>% unique())
-
-data_long$IDsource=match(data_long$source, nodes$name)-1 
-data_long$IDtarget=match(data_long$target, nodes$name)-1
-
-
-
-ColourScal ='d3.scaleOrdinal() .range(["#0015BC","#FF0000","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f"])'
-
-
-
-sankeyNetwork(Links = data_long, Nodes = nodes,
-                     Source = "IDsource", Target = "IDtarget",
-                     Value = "value", NodeID = "name", 
-                     sinksRight=TRUE, colourScale=ColourScal, nodeWidth=40, fontSize=13, nodePadding=20)
-# 
-# fin_set <- financial_set %>% filter(!(is.na(YEARSINUS_W58)))
-# hist(as.numeric(fin_set$YEARSINUS_W58))
+#Speaking Spanish vs. importance of being catholic
+#mosaic(IDENSAL_g_W58 ~ LAN1_W58,
+#       data = ds,
+#       direction = c("v", "h"),
+#       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+#       spacing = spacing_equal(sp = unit(0, "lines")),
+#       labeling = labeling_border(rot_labels = c(0, 0, 0, 0),
+#                                  set_varnames = c(IDENSAL_g_W58 = "How important is being Catholic\n to the Hispanic Experience?", LAN1_W58 = "How well can you carry a conversation in Spanish?"))) +
+#  theme_grey(16)
 
 ```

@@ -7,5 +7,9 @@ issues-with-our-data
 data-transformation
 missing-values
 results
+question-1
+question-1-results
+question-2
+question-2-results
 interactive-component
 conclusion
