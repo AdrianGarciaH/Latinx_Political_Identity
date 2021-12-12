@@ -1,9 +1,26 @@
-{
+{ 
+"nodes": [
+{"node":"Democrat","name":"Democrat"},
+{"node":"Republican","name":"Republican"},
+{"node":"Independent","name":"Independent"},
+{"node":"Something Else","name":"Something Else"},
+{"node":0,"name":"Mexican"},
+ {"node":"Cuban","name":"Cuban"},
+ {"node":"Puerto Rican","name":"Puerto Rican"},
+{"node":"Dominican","name":"Dominican"},
+{"node":"Salvadoran","name":"Salvadoran"},
+ {"node":"Spanish","name":"Spanish"},
+ {"node":"Other Central American","name":"Other Central American"},
+{"node":"Other South American","name":"Other South American"},
+{"node":"Other","name":"Other"},
+ {"node":"Born in US","name":"Born in US"},
+ {"node":"Not Born in US","name":"Not Born in US"}
+],
 "links": [
-{"source":"Mexican","target":"Democrat","value":"515"},
-{"source":"Mexican","target":"Republican","value":"135"},
-{"source":"Mexican","target":"Independent","value":"212"},
-{"source":"Mexican","target":"Something Else","value":"124"},
+{"source":0,"target":"Democrat","value":"515"},
+{"source":0,"target":"Republican","value":"135"},
+{"source":0,"target":"Independent","value":"212"},
+{"source":0,"target":"Something Else","value":"124"},
 {"source":"Cuban","target":"Democrat","value":"221"},
 {"source":"Cuban","target":"Republican","value":"313"},
 {"source":"Cuban","target":"Independent","value":"228"},
@@ -44,21 +61,4 @@
 {"source":"Republican","target":"Not Born in US","value":"221"},
 {"source":"Independent","target":"Not Born in US","value":"289"},
 {"source":"Something Else","target":"Not Born in US","value":"150"}
-] ,
-"nodes": [
-{"node":"Democrat","name":"Democrat"},
-{"node":"Republican","name":"Republican"},
-{"node":"Independent","name":"Independent"},
-{"node":"Something Else","name":"Something Else"},
-{"node":"Mexican","name":"Mexican"},
- {"node":"Cuban","name":"Cuban"},
- {"node":"Puerto Rican","name":"Puerto Rican"},
-{"node":"Dominican","name":"Dominican"},
-{"node":"Salvadoran","name":"Salvadoran"},
- {"node":"Spanish","name":"Spanish"},
- {"node":"Other Central American","name":"Other Central American"},
-{"node":"Other South American","name":"Other South American"},
-{"node":"Other","name":"Other"},
- {"node":"Born in US","name":"Born in US"},
- {"node":"Not Born in US","name":"Not Born in US"}
 ] }
