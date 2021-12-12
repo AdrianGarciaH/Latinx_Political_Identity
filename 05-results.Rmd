@@ -12,7 +12,7 @@ library(ggalluvial)
 #library(networkD3)
 #library(leaflet)
 library(dplyr)
-library(devtools)
+#library(devtools)
 library(networkD3)
 dataset = read_sav("ATP W58.sav")
 ```
