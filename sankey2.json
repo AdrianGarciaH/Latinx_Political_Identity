@@ -4,7 +4,7 @@
 {"node":"Republican","name":"Republican"},
 {"node":"Independent","name":"Independent"},
 {"node":"Something Else","name":"Something Else"},
-{"node":"Mexican","name":"Mexican"},
+{"node":0,"name":"Mexican"},
  {"node":"Cuban","name":"Cuban"},
  {"node":"Puerto Rican","name":"Puerto Rican"},
 {"node":"Dominican","name":"Dominican"},
@@ -17,10 +17,10 @@
  {"node":"Not Born in US","name":"Not Born in US"}
 ],
 "links": [
-{"source":"Mexican","target":"Democrat","value":"515"},
-{"source":"Mexican","target":"Republican","value":"135"},
-{"source":"Mexican","target":"Independent","value":"212"},
-{"source":"Mexican","target":"Something Else","value":"124"},
+{"source":0,"target":"Democrat","value":"515"},
+{"source":0,"target":"Republican","value":"135"},
+{"source":0,"target":"Independent","value":"212"},
+{"source":0,"target":"Something Else","value":"124"},
 {"source":"Cuban","target":"Democrat","value":"221"},
 {"source":"Cuban","target":"Republican","value":"313"},
 {"source":"Cuban","target":"Independent","value":"228"},
