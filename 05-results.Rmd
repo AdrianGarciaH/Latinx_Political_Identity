@@ -1,4 +1,5 @@
 # Results
+Our exploratory data visualization for our three primary questions of interest can be found below:
 
 ```{r}
 library(haven)
@@ -17,7 +18,162 @@ library(networkD3)
 dataset = read_sav("ATP W58.sav")
 ```
 
+## Question 1
+Is there a relationship between the birth status of Latin Americans in the U.S. and their political views? Are Latin Americans born in the U.S. more or less likely to support the Republican party? Moreover, for foreign-born Latin Americans, is there a relationship between their birth country and their political preferences? 
 
+### Question 1 Results:
+We began our exploration of this question by exploring the proportion of survey respondents who prefer each political party. The following bar graph displays the proportion of Latinos who prefer each of the major political parties in the United States.
+
+```{r}
+financial_set = dataset2[ , c("F_PARTY_FINAL","HISPORIGCMB_W58","PERSFIN_W58","LAN1_W58","LAN3_W58","IDENSAL_a_W58","IDENSAL_b_W58","IDENSAL_d_W58","IDENSAL_e_W58","IDENSAL_f_W58")]
+
+
+financial_set <- financial_set %>% filter(LAN1_W58+LAN3_W58 <=6)
+financial_set <- financial_set %>% filter(IDENSAL_b_W58 <90)
+
+#cor(financial_set)
+# financial_set$F_PARTY_FINAL <- as_factor(financial_set$F_PARTY_FINAL)
+# financial_set$YEARSINUS_W58 <- as_factor(financial_set$YEARSINUS_W58)
+# financial_set$HISPORIGCMB_W58 <- as_factor(financial_set$HISPORIGCMB_W58)
+
+# PUERTO RICO counted here as outside US
+dataset3 = ds[ , c("F_PARTY_FINAL","YEARSINUS_W58")]
+dataset3  <- dataset3 %>%
+     mutate(YEARSINUS_W58 = ifelse(is.na(YEARSINUS_W58),"Not Born in US","Born in US"))
+
+# ggplot(dataset3, aes(x=F_PARTY_FINAL)) +
+#   geom_histogram(stat = "count", position = "dodge", freq = TRUE)
+
+
+# ggplot(dataset3, aes(x=YEARSINUS_W58, fill=F_PARTY_FINAL)) +
+#   geom_histogram(stat = "count", position = "dodge", freq = TRUE)
+
+grouped_data <- aggregate(dataset3, by=list(dataset3$F_PARTY_FINAL, dataset3$YEARSINUS_W58), FUN=length)
+# can add column with colors and scale_fill_identity()
+# build democrat and republican profiles based on views and combine
+
+grouped_data <- subset(grouped_data, select = -F_PARTY_FINAL)
+grouped_data <- grouped_data %>% pivot_wider(names_from = "Group.2", values_from = YEARSINUS_W58)
+
+grouped_data$`Not Born in US` <- grouped_data$`Not Born in US`/sum(grouped_data$`Not Born in US`)
+grouped_data$`Born in US` <- grouped_data$`Born in US`/sum(grouped_data$`Born in US`)
+
+grouped_data <- grouped_data %>% pivot_longer(!Group.1, names_to = "Birthplace", values_to = "Percent")
+
+grouped_data <- arrange(grouped_data, -Percent)
+
+
+dataset3$F_PARTY_FINAL <- factor(dataset3$F_PARTY_FINAL, levels = c("Democrat", "Republican", "Independent", "Something else", NA))
+
+
+
+
+# ggplot(data=dataset3, aes(x=F_PARTY_FINAL, y=..count.., fill = factor(..x..))) +
+#   geom_bar(stat="count") + scale_fill_manual(values=c("#0015BC", "#FF0000", "Purple","Brown","Yellow"))+
+#     labs(y = "Percent", x = "Party", fill="Party")
+
+
+
+
+dataset3 %>% 
+  count(F_PARTY_FINAL) %>% 
+  mutate(perc = n / nrow(dataset3)) -> temp
+
+ggplot(temp, aes(x = F_PARTY_FINAL, y = perc, fill = factor(..x..))) + geom_bar(stat = "identity") + scale_y_continuous(labels=scales::percent) +
+    labs(y = "Percent", x = "Party", fill="Party")  +
+    geom_text(aes(label = sprintf("%1.2f%%", 100*perc), vjust = -0.2))+ scale_fill_manual(values=c("#0015BC", "#FF0000", "Grey","Grey","Grey"))
+
+```
+As evidenced in this graph, the majority of Latinos, 41.25%, support the Democratic party, followed by 24.69% who support independent candidates and 21.25% who prefer the Republican party. In contrast, a Gallop poll from December 2019 (the date when our survey data was collected), found that overall, 28% of all Americans supported the Republican and Democrat parties each while 41% of Americans supported independent candidates. In comparison, we can clearly see that there seems to be a trend where Latinos support the Democratic party more heavily than the overall American population. The same Gallop poll asked those who support independent candidates whether they leaned more towards the Republican or Democratic parties and found that respondents are equally split between both. We don't have any data regarding the leanings of Latino respondents who consider themselves independent but this could be an interesting question to explore in the future. The strong support of the Democratic party observed from this graph, however, might support the hypothesis that a similar split in preference could be found within the subgroup of Latinos who support independent candidates.    
+https://news.gallup.com/poll/15370/party-affiliation.aspx
+
+To explore whether this trend holds for Latinos born outside of the united states, we graphed party preference faceted on birth status.
+
+```{r}
+ggplot(dataset3, aes(F_PARTY_FINAL, group = YEARSINUS_W58)) + geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count") +
+    geom_text(aes( label = scales::percent(..prop..),
+                   y= ..prop.. ), stat= "count", vjust = -.5) +
+    labs(y = "Percent", x = "Party", fill="Party") +
+    facet_grid(~YEARSINUS_W58) +
+    scale_y_continuous(labels = scales::percent)+ scale_fill_manual(values=c("#0015BC", "#FF0000", "Grey","Grey","Grey"))
+
+
+dataset4 = ds[ , c("F_PARTY_FINAL","YEARSINUS_W58","HISPORIGCMB_W58")]
+
+dataset4  <- dataset4 %>%
+     mutate(YEARSINUS_W58 = ifelse(is.na(YEARSINUS_W58),"Not Born in US","Born in US"))
+```
+As seen in this graph, there appears to be a difference between Latinos born in the U.S. and those born outside of it with regards to their political preference. It appears that American-born Latinos are slightly more likely to support the Republican party and independent candidates than their foreign-born counterparts, who lean more heavily towards Democrats. 
+
+But, do all foreign born Latino's share the same political preferences? The flow chart below explores the proportion of foreign-born Latinos who support each political party based on their birth country.  
+
+```{r}
+dataset5 = ds[ , c("F_PARTY_FINAL","HISPORIGCMB_W58")]
+data_long <- aggregate(dataset5, by=list(dataset5$F_PARTY_FINAL, dataset5$HISPORIGCMB_W58), FUN=length)
+
+
+
+names(data_long)[1] <- 'target'
+names(data_long)[2] <- 'source'
+names(data_long)[3] <- 'value'
+
+
+data_long <- data_long %>% filter(target != "Refused")
+data_long <- data_long %>% filter(source != "Refused")
+
+nodes <- data.frame(name=c(as.character(data_long$source), as.character(data_long$target)) %>% unique())
+
+data_long$IDsource=match(data_long$source, nodes$name)-1 
+data_long$IDtarget=match(data_long$target, nodes$name)-1
+
+
+
+ColourScal ='d3.scaleOrdinal() .range(["#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#FF0000","#0015BC","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f"])'
+
+sankeyNetwork(Links = data_long, Nodes = nodes,
+                     Source = "IDsource", Target = "IDtarget",
+                     Value = "value", NodeID = "name", 
+                     sinksRight=TRUE, colourScale=ColourScal, nodeWidth=40, fontSize=13, nodePadding=20)
+```
+As can be seen, the two main nationalities that make up the population of foreign born Latinos in the United States are Mexican and Cuban. By hovering over the Cuban section, we can observe that they represent a considerable proportion of those who support the Republican party. In comparison, Mexican-born Latin Americans make up a proportionally much smaller subset of those who support the Republican party. The same trend seems to hold to some degree for all other nationalities. This indicates that there might be some inherent differences in the viewpoints of Cuban-born Latinos that might be interesting to explore in depth in the future. 
+
+Besides nationality, we wondered if income level could be related to political preference. The flow chart below attempts to visualize this question by sub-setting foreign-born Latinos by their self-reported economic health.  
+
+```{r}
+dataset5 = ds[ , c("PERSFIN_W58","HISPORIGCMB_W58")]
+data_long <- aggregate(dataset5, by=list(dataset5$PERSFIN_W58, dataset5$HISPORIGCMB_W58), FUN=length)
+
+
+dataset6 = ds[ , c("F_PARTY_FINAL","PERSFIN_W58")]
+data_long2 <- aggregate(dataset6, by=list(dataset6$F_PARTY_FINAL, dataset6$PERSFIN_W58), FUN=length)
+
+data_long <- subset (data_long, select = -HISPORIGCMB_W58)
+data_long2 <- subset (data_long2, select = -F_PARTY_FINAL)
+
+data_long <- rbind(data_long,data_long2)
+
+names(data_long)[1] <- 'target'
+names(data_long)[2] <- 'source'
+names(data_long)[3] <- 'value'
+
+data_long <- data_long %>% filter(target != "Refused")
+data_long <- data_long %>% filter(source != "Refused")
+
+
+nodes <- data.frame(name=c(as.character(data_long$source), as.character(data_long$target)) %>% unique())
+
+data_long$IDsource=match(data_long$source, nodes$name)-1 
+data_long$IDtarget=match(data_long$target, nodes$name)-1
+
+
+
+ColourScal ='d3.scaleOrdinal() .range(["#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#FF0000","#0015BC","#1d8a0f","#1d8a0f"])'
+
+sankeyNetwork(Links = data_long, Nodes = nodes,
+                     Source = "IDsource", Target = "IDtarget",
+                     Value = "value", NodeID = "name", 
+                     sinksRight=TRUE, colourScale=ColourScal, nodeWidth=40, fontSize=13, nodePadding=20)
+```
 
 
 ```{r}
@@ -135,154 +291,7 @@ ggplot(table_ds7, aes(x=LAN3_W58, y= prop, fill = F_PARTY_FINAL)) +geom_col(posi
 ```
 
 
-```{r}
-financial_set = dataset2[ , c("F_PARTY_FINAL","HISPORIGCMB_W58","PERSFIN_W58","LAN1_W58","LAN3_W58","IDENSAL_a_W58","IDENSAL_b_W58","IDENSAL_d_W58","IDENSAL_e_W58","IDENSAL_f_W58")]
 
-
-financial_set <- financial_set %>% filter(LAN1_W58+LAN3_W58 <=6)
-financial_set <- financial_set %>% filter(IDENSAL_b_W58 <90)
-
-#cor(financial_set)
-# financial_set$F_PARTY_FINAL <- as_factor(financial_set$F_PARTY_FINAL)
-# financial_set$YEARSINUS_W58 <- as_factor(financial_set$YEARSINUS_W58)
-# financial_set$HISPORIGCMB_W58 <- as_factor(financial_set$HISPORIGCMB_W58)
-```
-
-```{r}
-# PUERTO RICO counted here as outside US
-dataset3 = ds[ , c("F_PARTY_FINAL","YEARSINUS_W58")]
-dataset3  <- dataset3 %>%
-     mutate(YEARSINUS_W58 = ifelse(is.na(YEARSINUS_W58),"Not Born in US","Born in US"))
-
-# ggplot(dataset3, aes(x=F_PARTY_FINAL)) +
-#   geom_histogram(stat = "count", position = "dodge", freq = TRUE)
-
-
-# ggplot(dataset3, aes(x=YEARSINUS_W58, fill=F_PARTY_FINAL)) +
-#   geom_histogram(stat = "count", position = "dodge", freq = TRUE)
-
-grouped_data <- aggregate(dataset3, by=list(dataset3$F_PARTY_FINAL, dataset3$YEARSINUS_W58), FUN=length)
-# can add column with colors and scale_fill_identity()
-# build democrat and republican profiles based on views and combine
-
-grouped_data <- subset(grouped_data, select = -F_PARTY_FINAL)
-grouped_data <- grouped_data %>% pivot_wider(names_from = "Group.2", values_from = YEARSINUS_W58)
-
-grouped_data$`Not Born in US` <- grouped_data$`Not Born in US`/sum(grouped_data$`Not Born in US`)
-grouped_data$`Born in US` <- grouped_data$`Born in US`/sum(grouped_data$`Born in US`)
-
-grouped_data <- grouped_data %>% pivot_longer(!Group.1, names_to = "Birthplace", values_to = "Percent")
-
-grouped_data <- arrange(grouped_data, -Percent)
-
-
-dataset3$F_PARTY_FINAL <- factor(dataset3$F_PARTY_FINAL, levels = c("Democrat", "Republican", "Independent", "Something else", NA))
-
-
-
-
-# ggplot(data=dataset3, aes(x=F_PARTY_FINAL, y=..count.., fill = factor(..x..))) +
-#   geom_bar(stat="count") + scale_fill_manual(values=c("#0015BC", "#FF0000", "Purple","Brown","Yellow"))+
-#     labs(y = "Percent", x = "Party", fill="Party")
-
-
-
-
-dataset3 %>% 
-  count(F_PARTY_FINAL) %>% 
-  mutate(perc = n / nrow(dataset3)) -> temp
-
-ggplot(temp, aes(x = F_PARTY_FINAL, y = perc, fill = factor(..x..))) + geom_bar(stat = "identity") + scale_y_continuous(labels=scales::percent) +
-    labs(y = "Percent", x = "Party", fill="Party")  +
-    geom_text(aes(label = sprintf("%1.2f%%", 100*perc), vjust = -0.2))+ scale_fill_manual(values=c("#0015BC", "#FF0000", "Grey","Grey","Grey"))
-
-
-
-ggplot(dataset3, aes(F_PARTY_FINAL, group = YEARSINUS_W58)) + geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count") +
-    geom_text(aes( label = scales::percent(..prop..),
-                   y= ..prop.. ), stat= "count", vjust = -.5) +
-    labs(y = "Percent", x = "Party", fill="Party") +
-    facet_grid(~YEARSINUS_W58) +
-    scale_y_continuous(labels = scales::percent)+ scale_fill_manual(values=c("#0015BC", "#FF0000", "Grey","Grey","Grey"))
-
-
-
-
-
-
-
-dataset4 = ds[ , c("F_PARTY_FINAL","YEARSINUS_W58","HISPORIGCMB_W58")]
-
-dataset4  <- dataset4 %>%
-     mutate(YEARSINUS_W58 = ifelse(is.na(YEARSINUS_W58),"Not Born in US","Born in US"))
-```
-
-
-```{r}
-dataset5 = ds[ , c("PERSFIN_W58","HISPORIGCMB_W58")]
-data_long <- aggregate(dataset5, by=list(dataset5$PERSFIN_W58, dataset5$HISPORIGCMB_W58), FUN=length)
-
-
-dataset6 = ds[ , c("F_PARTY_FINAL","PERSFIN_W58")]
-data_long2 <- aggregate(dataset6, by=list(dataset6$F_PARTY_FINAL, dataset6$PERSFIN_W58), FUN=length)
-
-data_long <- subset (data_long, select = -HISPORIGCMB_W58)
-data_long2 <- subset (data_long2, select = -F_PARTY_FINAL)
-
-data_long <- rbind(data_long,data_long2)
-
-names(data_long)[1] <- 'target'
-names(data_long)[2] <- 'source'
-names(data_long)[3] <- 'value'
-
-data_long <- data_long %>% filter(target != "Refused")
-data_long <- data_long %>% filter(source != "Refused")
-
-
-nodes <- data.frame(name=c(as.character(data_long$source), as.character(data_long$target)) %>% unique())
-
-data_long$IDsource=match(data_long$source, nodes$name)-1 
-data_long$IDtarget=match(data_long$target, nodes$name)-1
-
-
-
-ColourScal ='d3.scaleOrdinal() .range(["#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#FF0000","#0015BC","#1d8a0f","#1d8a0f"])'
-
-sankeyNetwork(Links = data_long, Nodes = nodes,
-                     Source = "IDsource", Target = "IDtarget",
-                     Value = "value", NodeID = "name", 
-                     sinksRight=TRUE, colourScale=ColourScal, nodeWidth=40, fontSize=13, nodePadding=20)
-```
-
-
-```{r}
-dataset5 = ds[ , c("F_PARTY_FINAL","HISPORIGCMB_W58")]
-data_long <- aggregate(dataset5, by=list(dataset5$F_PARTY_FINAL, dataset5$HISPORIGCMB_W58), FUN=length)
-
-
-
-names(data_long)[1] <- 'target'
-names(data_long)[2] <- 'source'
-names(data_long)[3] <- 'value'
-
-
-data_long <- data_long %>% filter(target != "Refused")
-data_long <- data_long %>% filter(source != "Refused")
-
-nodes <- data.frame(name=c(as.character(data_long$source), as.character(data_long$target)) %>% unique())
-
-data_long$IDsource=match(data_long$source, nodes$name)-1 
-data_long$IDtarget=match(data_long$target, nodes$name)-1
-
-
-
-ColourScal ='d3.scaleOrdinal() .range(["#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f","#FF0000","#0015BC","#1d8a0f","#1d8a0f","#1d8a0f","#1d8a0f"])'
-
-sankeyNetwork(Links = data_long, Nodes = nodes,
-                     Source = "IDsource", Target = "IDtarget",
-                     Value = "value", NodeID = "name", 
-                     sinksRight=TRUE, colourScale=ColourScal, nodeWidth=40, fontSize=13, nodePadding=20)
-```
 
 
 ```{r}
