@@ -11,5 +11,7 @@ question-1
 question-1-results
 question-2
 question-2-results
+question-3
+question-3-results
 interactive-component
 conclusion
