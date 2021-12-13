@@ -1,3 +1,6 @@
 # Interactive component
 
 
+  <iframe src="result_sankey.html" width="720" height="420"></iframe>
+
+  
