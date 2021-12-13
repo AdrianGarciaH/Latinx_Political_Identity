@@ -89,6 +89,8 @@ ggplot(temp, aes(x = F_PARTY_FINAL, y = perc, fill = factor(..x..))) + geom_bar(
   theme(legend.position = "none")
 
 ```
+
+
 As evidenced in this graph, the majority of Latinos, 41.25%, support the Democrat party, followed by 24.69% who support independent candidates and 21.25% who prefer the Republican party. In contrast, a Gallop poll from December 2019 (the date when our survey data was collected), found that overall, 28% of all Americans supported the Republican and Democrat parties each while 41% of Americans supported independent candidates. In comparison, we can clearly see that there seems to be a trend where Latinos support the Democratic party more heavily than the overall American population. The same Gallop poll asked those who support independent candidates whether they leaned more towards the Republican or Democrat parties and found that respondents are equally split between both. We don't have any data regarding the leanings of Latino respondents who consider themselves independent but this could be an interesting question to explore in the future. The strong support of the Democrat party observed from this graph, however, might support the hypothesis that a similar split in preference could be found within the subgroup of Latinos who support independent candidates.    
 https://news.gallup.com/poll/15370/party-affiliation.aspx
 
@@ -108,6 +110,8 @@ dataset4 = ds[ , c("F_PARTY_FINAL","YEARSINUS_W58","HISPORIGCMB_W58")]
 dataset4  <- dataset4 %>%
      mutate(YEARSINUS_W58 = ifelse(is.na(YEARSINUS_W58),"Not Born in US","Born in US"))
 ```
+
+
 As seen in this graph, there appears to be a difference between Latinos born in the U.S. and those born outside of it with regards to their political preference. It appears that American-born Latinos are slightly more likely to support the Republican party and independent candidates than their foreign-born counterparts, who lean more heavily towards Democrats. 
 
 But, do all foreign born Latino's share the same political preferences? The flow chart below explores the proportion of foreign-born Latinos who support each political party based on their birth country.  
@@ -273,15 +277,7 @@ table_ds2 <- ds1 %>%
   group_by(HISPDISCR_f_W58, KNOWDPORT_W58, RACESURV26_W58, F_PARTY_FINAL) %>%
   summarize(Freq = n())
 
-ggplot(table_ds2,
-       aes(y = Freq, axis1 = HISPDISCR_f_W58, axis2 = KNOWDPORT_W58, axis3 = RACESURV26_W58, axis4 = F_PARTY_FINAL)) +
-  geom_alluvium(aes(fill = F_PARTY_FINAL), width = 1/12) +
-  geom_stratum(width = 1/12, fill = "black", color = "grey") +
-  geom_label(stat = "stratum", aes(label = after_stat(stratum))) +
-  scale_x_discrete(limits = c("Experienced \nDiscrimination", "Knows Someone \nwho was Deported", "Identifies with \nother Latinos", "Political \nPreference"), expand = c(.05, .05)) +
-  scale_fill_brewer(type = "qual", palette = "Set1") +
-  ggtitle("Political Preference vs. Latino Experience") +
-  theme_grey(16)
+#ggplot(table_ds2, aes(y = Freq, axis1 = HISPDISCR_f_W58, axis2 = KNOWDPORT_W58, axis3 = RACESURV26_W58, axis4 = F_PARTY_FINAL)) + geom_alluvium(aes(fill = F_PARTY_FINAL), width = 1/12) + geom_stratum(width = 1/12, fill = "black", color = "grey") + geom_label(stat = "stratum", aes(label = after_stat(stratum))) + scale_x_discrete(limits = c("Experienced \nDiscrimination", "Knows Someone \nwho was Deported", "Identifies with \nother Latinos", "Political \nPreference"), expand = c(.05, .05)) + scale_fill_brewer(type = "qual", palette = "Set1") + ggtitle("Political Preference vs. Latino Experience") + theme_grey(16)
 ```
 
 
@@ -351,6 +347,8 @@ p1 <- p1 + guides(fill=guide_legend(title="Should 'Latinx' \nbe used to \ndescri
 p1
 
 ```
+
+
 As we can see, most of our respondents on either category do not support the usage of the term to describe the Hispanic population. Nevertheless, around 40% of respondents who have experienced discrimination would support it. This shows that expereincing discrimination seems to be correlated to support for use of 'Latinx' 
 
 Our analysis of this question, however, was limited by the fact that most of the respodnents have never heard of the term 'Latinx' and thus the survey did not present them with questions regarding their approval of its usage to describe the whole of the Latin American community. It is possible that people who knew of the term do so because they run in more liberal circles where gender inclusiveness is encouraged and thus their support for the term was influenced by this. Not enough data is present to make any conclusive claims. It would have been helpful if the survey designers had presented a definition of 'Latinx' to those who have not heard of it in order to capture their views on the term and thus have more complete data. 
@@ -411,6 +409,8 @@ p <- ggplot(table_ds9, aes(x=fct_infreq(LANPROF), y= prop, fill = F_PARTY_FINAL)
 p <- p + guides(fill=guide_legend(title="Party Affiliation"))
 p
 ```
+
+
 This result seemed unexpected and so we decided to take a look at our Spanish speakers and analyze their place of birth to see if there were any insights to their political preferences. As shown below, a majority of the respondents who only speak Spanish were born in Cuba. In Question 1, we showed that Cuban tend to differ in their political affinity from the rest of Latinos and the fact that most striclty Spanish speakers are of Cuban decent could explain the observed difference in the graph above. 
 
 ```{r}
@@ -437,13 +437,16 @@ The cultural signifiers in question were:
 
 5. How important is __attending Hispanic cultural events__ to what being Hispanic means to you?
 
-6. How important is __wearing traditional Hispanic attire__ to what being Hispanic means to you?
+6. How important is __being catholic__ to what being Hispanic means to you?
 
-7. How important is __being catholic__ to what being Hispanic means to you?
-
-We created the six mosaic plots below in order to get a quick look at possible correlations between speaking Spanish and the reported importance of these different aspects of the Hispanic identity. Overall, it appears that speaking Spanish and having two Hispanic parents are the most highly rated characteristics of the Hispanic Identity.
+7. How important is __wearing traditional Hispanic attire__ to what being Hispanic means to you?
 
 
+We created the six mosaic plots below in order to get a quick look at possible correlations between speaking Spanish and the reported importance of these different aspects of the Hispanic identity. We also ran chi square tests for each of the cultural signifiers and found that, for all of them, the p-value was close to zero. This meant that we could reject the null hypothesis that there is no relationship between someone's conversational Spanish proficiency and the importance they place on certain elements of the Latino experience.  
+
+Overall, it appears that speaking Spanish and having two Hispanic parents are the most highly rated characteristics of the Hispanic Identity.
+
+1. How important is __speaking Spanish__  to what being Hispanic means to you?
 ```{r}
 
 #Conversational Spanish vs. elements of being Hispanic
@@ -477,10 +480,13 @@ p1 <- mosaic(IDENSAL_a_W58 ~ LAN1_W58,
        highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
        spacing = spacing_equal(sp = unit(.5, "lines")),
        labeling = labeling_border(
-                                  set_varnames = c(IDENSAL_a_W58 = "Having Two Hispanic Parents", LAN1_W58 = "Rate Your Conversational Spanish")))
+                                  set_varnames = c(IDENSAL_a_W58 = "Speaking Spanish", LAN1_W58 = "Rate Your Conversational Spanish")))
 
 chisq.test(table_ds10$LAN1_W58, table_ds10$IDENSAL_a_W58)
 ```
+Perhaps not surprisingly, it appears that most people who have an excellent handle on conversational Spanish think speaking Spanish is an essential or important aspect of the Latino identity. This could be the basis of a hypothesis that people think of their ethnic identity in very personal terms and so define what it means to belong to a particular grouping based on their own behavior. If we had data regarding the percentage of our respondents who can answer in the affirmative to the rest of our cultural signifiers we could explore this hypothesis. However, that information was not collected and so perhaps it would be a good focus for future research.  
+
+2. How important is __having two Hispanic parents__ to what being Hispanic means to you?
 
 ```{r}
 #Speaking Spanish vs. importance of having two Hispanic parents
@@ -494,6 +500,9 @@ p2 <- mosaic(IDENSAL_e_W58 ~ LAN1_W58,
 
 chisq.test(table_ds10$LAN1_W58, table_ds10$IDENSAL_e_W58)
 ```
+Another interesting interpretation of this graph and the remeinding ones is that people who don't speak Spanish very well tend to underplay the importance of most cultural signifiers. Very few of them think their identity is dependent on whether they speak Spanish, or whether both their parents are Hispanic. It would be interesting to explore what they concider to be the basis of the hispanic identity in future research. 
+
+3. How important is __socializing with other Hispanics__ to what being Hispanic means to you?
 
 ```{r}
 #Speaking Spanish vs. importance of socializing with other Hispanics
@@ -507,6 +516,9 @@ p3 <- mosaic(IDENSAL_d_W58 ~ LAN1_W58,
 
 chisq.test(table_ds10$LAN1_W58, table_ds10$IDENSAL_d_W58)
 ```
+A possible answer to the question posed above could be gleamed from this mosaic plot. Here we can see the largest percentage of respondents who speak Spanish poorly that have rated a social signifier as important. They comparatively seem to think socializing with other Hispanics is more important than the other signifiers.    
+
+4. How important is __having a Spanish last name__ to what being Hispanic means to you?
 
 ```{r}
 #Speaking Spanish vs. importance of having a Spanish last name
@@ -520,6 +532,9 @@ p4 <- mosaic(IDENSAL_f_W58 ~ LAN1_W58,
 
 chisq.test(table_ds10$LAN1_W58, table_ds10$IDENSAL_f_W58)
 ```
+From this plot on, we can see that the proportion of respondent who think the remainding cultural signifiers are important has started to shrink. It appears not as many respondents think having a Spanish last name is as essential as speaking Spanish or having a genetic or cultural link to the Hispanic population.  
+
+5. How important is __attending Hispanic cultural events__ to what being Hispanic means to you?
 
 ```{r}
 #Speaking Spanish vs. importance of Hispanic cultural events 
@@ -533,20 +548,10 @@ p5 <- mosaic(IDENSAL_b_W58 ~ LAN1_W58,
 
 chisq.test(table_ds10$LAN1_W58, table_ds10$IDENSAL_b_W58)
 ```
+A similar pattern to the once above can be seen in this plot. 
 
-```{r}
-#Speaking Spanish vs. importance of wearing Hispanic attire
-p6 <- mosaic(IDENSAL_c_W58 ~ LAN1_W58,
-       data = table_ds10,
-       direction = c("v", "h"),
-       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
-       spacing = spacing_equal(sp = unit(.5, "lines")),
-       labeling = labeling_border(
-                                  set_varnames = c(IDENSAL_c_W58 = "Wearing Typical Hispanic Attire", LAN1_W58 = "Rate Your Conversational Spanish")))
 
-chisq.test(table_ds10$LAN1_W58, table_ds10$IDENSAL_c_W58)
-```
-
+6. How important is __being catholic__ to what being Hispanic means to you?
 ```{r}
 #Speaking Spanish vs. importance of being catholic
 mosaic(IDENSAL_g_W58 ~ LAN1_W58,
@@ -559,3 +564,20 @@ mosaic(IDENSAL_g_W58 ~ LAN1_W58,
 
 chisq.test(table_ds10$LAN1_W58, table_ds10$IDENSAL_g_W58)
 ```
+Being Catholic is the first cultural signifier that most of the respondents agree is not an important aspect of the Hispanic identity. Most of our respondents have origins in deeply catholic countries and and the fact that the importance of this religious belief to their identity is not considered as essential as others could point out to changing attitudes towards religion. This would be another interesting aspect to explore in future research. 
+
+
+7. How important is __wearing traditional Hispanic attire__ to what being Hispanic means to you?
+```{r}
+#Speaking Spanish vs. importance of wearing Hispanic attire
+p6 <- mosaic(IDENSAL_c_W58 ~ LAN1_W58,
+       data = table_ds10,
+       direction = c("v", "h"),
+       highlighting_fill = RColorBrewer::brewer.pal(3, "Blues"),
+       spacing = spacing_equal(sp = unit(.5, "lines")),
+       labeling = labeling_border(
+                                  set_varnames = c(IDENSAL_c_W58 = "Wearing Typical Hispanic Attire", LAN1_W58 = "Rate Your Conversational Spanish")))
+
+chisq.test(table_ds10$LAN1_W58, table_ds10$IDENSAL_c_W58)
+```
+Wearing traditional ethnic attire is the least important cultural signifier  of the Hispanic identity according to our respondents. Although a pattern still holds that those who speak Spanish believe it is more important than respondents who don't.  

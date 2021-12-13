@@ -24,7 +24,7 @@
 <meta name="author" content="Adrian Garcia Hernandez, Mendel Branover" />
 
 
-<meta name="date" content="2021-12-12" />
+<meta name="date" content="2021-12-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -125,6 +125,19 @@
             <section class="normal" id="section-">
 <div id="data-transformation" class="section level1" number="3">
 <h1><span class="header-section-number">Chapter 3</span> Data transformation</h1>
+<p>Our dataset was heavily pre-processed by the researchers at the Pew Research Center and so very little data transformation was required for our project. We primarily relied on grouping and filtering the dataset based on characteristics of interest for each of our questions.</p>
+<p>The only true data transformation that took place was our creation of a Language Proficiency column to answer a section of Question 3. This was done as follows:</p>
+<ul>
+<li>We first selected the columns of interest. In this case, we limited our understanding of being proficient at a language to whether the respondent could carry on a conversation in English and Spanish well. Information regarding this was found in columns ‘LAN1_W58’ for Spanish and ‘LAN3_W58’ for English.</li>
+<li>Created a new column ‘LANPROF’ to encode language proficiency as Bilingual, Spanish, or English.</li>
+<li>Filled out column ‘LANPROF’ with the following definitions:
+<ul>
+<li>Bilingual if (LAN1_W58 == ‘Pretty well’ | LAN1_W58 == ‘Very well’) &amp; (LAN3_W58 == ‘Pretty well’ | LAN3_W58 == ‘Very well’)</li>
+<li>Spanish if (LAN1_W58 == ‘Pretty well’ | LAN1_W58 == ‘Very well’) &amp; (LAN3_W58 == ‘Just a little’ | LAN3_W58 == ‘Not at all’)</li>
+<li>English if (LAN1_W58 == ‘Just a little’ | LAN1_W58 == ‘Not at all’) &amp; (LAN3_W58 == ‘Pretty well’ | LAN3_W58 == ‘Very well’)</li>
+</ul></li>
+<li>Lastly, we filtered our any possible NA values present.</li>
+</ul>
 
 </div>
             </section>
