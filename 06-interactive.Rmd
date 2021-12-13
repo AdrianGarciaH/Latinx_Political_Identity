@@ -1,5 +1,8 @@
 # Interactive component
 
+The interactive part of our project was built using D3 Version 6. It is an interactive flow chart displaying country of origin, political affinity, and birth status for the 3030 respondents included in the data sample. It allows the user to select and drag each subcategory, thus allowing focus to be drawn to a particular variable. Users may select any category and drag it vertically or horizontally as desired. Hovering over a category or flow will result ina small display that details the number of respondents that fall under that category. Some observations of interest might be that most of the respondents that support the Republican party are both Cuban and born in the United States. Meanwhile, most respondents who support the Democratic party are Mexican and almost evently split between American-born and foreing-born respondents. 
+
+
 
   <iframe src="result_sankey.html" width="720" height="420"></iframe>
 
